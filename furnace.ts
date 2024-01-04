@@ -4,7 +4,7 @@ This is using the unofficial Fernet v3 spec created by Mike Lodder (https://gith
 */
 
 import { xchacha20poly1305 } from "@noble/ciphers/chacha";
-import { utf8ToBytes } from "@noble/ciphers/utils";
+import { bytesToUtf8, utf8ToBytes } from "@noble/ciphers/utils";
 import { randomBytes } from "node:crypto";
 
 export class Furnace {
@@ -13,11 +13,14 @@ export class Furnace {
   // Private key for XChaCha20
   private key: Uint8Array = randomBytes(32);
 
+  constructor (key?: Uint8Array) { if (key) this.key = key }
+
   public encode(
     message: string,
     nonce: Uint8Array = randomBytes(24),
     date: Date = new Date()
-  ): string | Uint8Array {
+  ): Uint8Array {
+    console.log(this.key);
     // Checks nonce length.
     if (nonce.length !== 24)
       throw new Error(
@@ -43,6 +46,61 @@ export class Furnace {
     token.set(aad);
     token.set(text, aad.length);
 
+    console.log(this.version)
+    console.log(nonce)
+    console.log(aad)
+    console.log(utf8ToBytes(message))
+    console.log(text)
+
     return token;
   }
+  public decode(token: Uint8Array, ttl?: number): string {
+    console.log(this.key);
+    // Check token version
+    if (token[0] !== 0x20) throw new Error(`Invalid Fernet version, expected version 32, recieved version ${token[0]}.`);
+    
+    // Check minimum token length
+    if (token.length < 33) throw new Error(`Invalid token length, expected at least 264 bits, recieved ${token.length * 8} bits.`);
+    
+    // Extract timestamp
+    const timestamp: number = parseInt(token.slice(1, 9).join(''));
+    
+    // Check if TTL has expired if included
+    if(ttl && ttl >= 0 && timestamp + ttl < Math.round(Date.now() / 1000)) throw new Error(`Token has expired.`)
+    
+    // Extract AAD and nonce from token
+    const text = token.slice(33)
+    const nonce = token.slice(9, 33)
+    const aad = token.slice(0, 33)
+
+    // Decrypt message and return as string
+    const xchacha = xchacha20poly1305(this.key, nonce, aad)
+    const message = xchacha.decrypt(text)
+
+    console.log(this.version)
+    console.log(nonce)
+    console.log(aad)
+    console.log(text)
+    console.log(message)
+
+    return bytesToUtf8(message);
+  }
+
+  public toBase64URL(token : Uint8Array) : string {
+    return Buffer.from(token).toString('base64url');
+  }
+
+  public toUint8Array(base64: string) : Uint8Array {
+    return new Uint8Array(Buffer.from(base64, "base64url"));
+  }
 }
+
+// tests
+
+const furnace = new Furnace(randomBytes(32));
+const message = "testing"
+const encoded = furnace.encode(message);
+const base64 = furnace.toBase64URL(encoded);
+const array = furnace.toUint8Array(base64);
+const decoded = furnace.decode(array);
+//console.log(`Message: ${message}\r\nEncoded Message: ${encoded}\r\nEncoded as B64URL: ${base64}\r\nEncoded back to UI8A: ${array}\r\nDecoded Message: ${decoded}\r\n`)
