@@ -28,7 +28,7 @@ export class Furnace {
       8,
       "0"
     );
-    // Generates additional authentication data (AAD) by creating a byte concatenation of the version, timestamp and nonce.
+    // Generates additional associated data (AAD) by creating a byte concatenation of the version, timestamp and nonce.
     const aad = new Uint8Array(33);
     aad[0] = this.version;
     aad.set(Uint8Array.from(timestamp, Number), 1);
