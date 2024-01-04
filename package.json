@@ -1,5 +1,5 @@
 {
-  "name": "furnace",
+  "name": "@mrhrobertson/furnace",
   "version": "1.0.0",
   "description": "Fernet implementation using XChaCha20-Poly1305 symmetric encryption",
   "type": "module",
