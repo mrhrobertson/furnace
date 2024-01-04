@@ -29,7 +29,6 @@ export class Furnace {
     nonce: Uint8Array = new Uint8Array(randomBytes(24)),
     date: Date = new Date()
   ): Uint8Array {
-    console.log(this.key);
     // Checks nonce length.
     if (nonce.length !== 24)
       throw new Error(
@@ -55,12 +54,6 @@ export class Furnace {
     token.set(aad);
     token.set(text, aad.length);
 
-    console.log(this.version);
-    console.log(nonce);
-    console.log(aad);
-    console.log(utf8ToBytes(message));
-    console.log(text);
-
     return token;
   }
 
@@ -71,7 +64,6 @@ export class Furnace {
    * @returns The message string
    */
   public decode(token: Uint8Array, ttl?: number): string {
-    console.log(this.key);
     // Check token version
     if (token[0] !== 0x20)
       throw new Error(
@@ -101,12 +93,6 @@ export class Furnace {
     // Decrypt message and return as string
     const xchacha = xchacha20poly1305(this.key, nonce, aad);
     const message = xchacha.decrypt(text);
-
-    console.log(this.version);
-    console.log(nonce);
-    console.log(aad);
-    console.log(text);
-    console.log(message);
 
     return bytesToUtf8(message);
   }

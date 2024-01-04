@@ -4,9 +4,6 @@
   "description": "Fernet implementation using XChaCha20-Poly1305 symmetric encryption",
   "type": "module",
   "main": "furnace.ts",
-  "scripts": {
-    "test": "node test ./tests.ts"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mrhrobertson/furnace.git"
