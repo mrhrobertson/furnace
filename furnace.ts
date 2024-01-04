@@ -1,6 +1,6 @@
 /* 
-    This is Furnace, an implementation of Fernet using XChaCha20-Poly1305 to improve security of the recipe.
-    This is using the unofficial Fernet v3 spec created by Mike Lodder (https://github.com/mikelodder7/fernet/blob/deccfda5ff8d3c407175a2eace570bd4b7adc5ad/specs/version3.md)
+This is Furnace, an implementation of Fernet using XChaCha20-Poly1305 to improve security of the recipe.
+This is using the unofficial Fernet v3 spec created by Mike Lodder (https://github.com/mikelodder7/fernet/blob/deccfda5ff8d3c407175a2eace570bd4b7adc5ad/specs/version3.md)
 */
 
 import { xchacha20poly1305 } from "@noble/ciphers/chacha";
