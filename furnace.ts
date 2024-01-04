@@ -17,9 +17,16 @@ export class Furnace {
     if (key) this.key = key;
   }
 
+  /**
+   * Encrypts a message string using XChaCha20-Poly1305 and encodes into a Fernet v3 token
+   * @param {string} message The string that you want to encrypt and encode.
+   * @param {Uint8Array} nonce You can provide a nonce, but one will be generated for you
+   * @param date This allows you to add a custom datetime, but this should only be used for testing
+   * @returns A Fernet token
+   */
   public encode(
     message: string,
-    nonce: Uint8Array = randomBytes(24),
+    nonce: Uint8Array = new Uint8Array(randomBytes(24)),
     date: Date = new Date()
   ): Uint8Array {
     console.log(this.key);
@@ -56,6 +63,13 @@ export class Furnace {
 
     return token;
   }
+
+  /**
+   * Decodes a provided Fernet token, provided that the instance's key is the same as what encrypted the token.
+   * @param token The token you wish to decrypt.
+   * @param ttl The time to live expected of the token.
+   * @returns The message string
+   */
   public decode(token: Uint8Array, ttl?: number): string {
     console.log(this.key);
     // Check token version
@@ -97,10 +111,12 @@ export class Furnace {
     return bytesToUtf8(message);
   }
 
+  /** Encode a Uint8Array as a Base64 string with URL safety. */
   public toBase64URL(token: Uint8Array): string {
     return Buffer.from(token).toString("base64url");
   }
 
+  /** Decodes a Base64URL string to a Uint8Array. */
   public toUint8Array(base64: string): Uint8Array {
     return new Uint8Array(Buffer.from(base64, "base64url"));
   }
