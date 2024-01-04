@@ -1,0 +1,27 @@
+{
+  "name": "furnace",
+  "version": "1.0.0",
+  "description": "Fernet implementation using XChaCha20-Poly1305 symmetric encryption",
+  "type": "module",
+  "main": "furnace.ts",
+  "scripts": {
+    "test": "node test ./tests.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrhrobertson/furnace.git"
+  },
+  "author": "Mark Robertson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrhrobertson/furnace/issues"
+  },
+  "homepage": "https://github.com/mrhrobertson/furnace#readme",
+  "dependencies": {
+    "@noble/ciphers": "^0.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "tsx": "^4.7.0"
+  }
+}
