@@ -1,3 +1,2 @@
 # Furnace
-
-Fernet implementation using XChaCha20-Poly1305 symmetric encryption
+## Fernet implementation with XChaCha20-Poly1305
