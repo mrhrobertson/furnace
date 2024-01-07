@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+More TTL fixes
+
 ## 1.1.1
 
 Testing TTL fixes

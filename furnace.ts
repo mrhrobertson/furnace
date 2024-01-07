@@ -82,7 +82,7 @@ export class Furnace {
     const timestamp: number = parseInt(token.slice(1, 9).join(""));
 
     // Check if TTL has expired if included
-    if (ttl && ttl >= 0 && timestamp + ttl > Math.round(Date.now() / 1000))
+    if (ttl && ttl >= 0 && timestamp + ttl < Math.round(Date.now() / 1000))
       throw new Error(`Token has expired.`);
 
     // Extract AAD and nonce from token
