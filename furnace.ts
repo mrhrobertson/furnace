@@ -21,13 +21,11 @@ export class Furnace {
    * Encrypts a message string using XChaCha20-Poly1305 and encodes into a Fernet v3 token
    * @param {string} message The string that you want to encrypt and encode.
    * @param {Uint8Array} nonce You can provide a nonce, but one will be generated for you
-   * @param date This allows you to add a custom datetime, but this should only be used for testing
    * @returns A Fernet token
    */
   public encode(
     message: string,
-    nonce: Uint8Array = new Uint8Array(randomBytes(24)),
-    date: Date = new Date()
+    nonce: Uint8Array = new Uint8Array(randomBytes(24))
   ): Uint8Array {
     // Checks nonce length.
     if (nonce.length !== 24)
@@ -35,14 +33,14 @@ export class Furnace {
         "Cryptographic nonce doesn't match the expected 192-bit length."
       );
     // Pads UNIX timestamp in seconds to an 64-bit unsigned integer.
-    const timestamp = String(Math.round(date.getTime() / 1000)).padStart(
-      8,
-      "0"
-    );
+    const timestamp = Math.round(Date.now() / 1000);
+    const buffer = new ArrayBuffer(8);
+    const dataview = new DataView(buffer);
+    dataview.setBigUint64(0, BigInt(timestamp), false);
     // Generates additional associated data (AAD) by creating a byte concatenation of the version, timestamp and nonce.
     const aad = new Uint8Array(33);
     aad[0] = this.version;
-    aad.set(Uint8Array.from(timestamp, Number), 1);
+    aad.set(new Uint8Array(buffer), 1);
     aad.set(nonce, 9);
 
     // Encrypt message using XChaCha20-Poly1305

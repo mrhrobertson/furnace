@@ -1,6 +1,6 @@
 {
   "name": "@mrhrobertson/furnace",
-  "version": "1.1.2",
+  "version": "1.1.6",
   "description": "Fernet implementation using XChaCha20-Poly1305 symmetric encryption",
   "type": "module",
   "main": "furnace.ts",
