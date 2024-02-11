@@ -7,6 +7,35 @@ import { xchacha20poly1305 } from "@noble/ciphers/chacha";
 import { bytesToUtf8, utf8ToBytes } from "@noble/ciphers/utils";
 import { randomBytes } from "node:crypto";
 
+enum FurnaceErrorCode {
+  "NONCE_LENGTH" = 0,
+  "INVALID_FERNET_VERSION" = 1,
+  "INVALID_TOKEN_LENGTH" = 2,
+  "TOKEN_EXPIRED" = 3,
+}
+
+enum FurnaceErrorMessage {
+  "Cryptographic nonce doesn't match the expected 192-bit length." = 0,
+  "Invalid Fernet version, expected version 32." = 1,
+  "Invalid token length, expected at least 264 bits." = 2,
+  "Token has expired." = 3,
+}
+
+export class FurnaceError extends Error {
+  code: FurnaceErrorCode;
+  msg: FurnaceErrorMessage;
+  constructor(code: FurnaceErrorCode, msg?: FurnaceErrorMessage) {
+    super(msg.toString());
+    Object.setPrototypeOf(this, FurnaceError.prototype);
+    code = this.code;
+    msg = this.msg;
+  }
+
+  toString() {
+    return `[${Date.now().toLocaleString}] FURNACE: ${this.code} - ${this.msg}`;
+  }
+}
+
 export class Furnace {
   // Fernet version, must be 0x20 (32) as defined in spec.
   private version: number = 0x20;
@@ -28,10 +57,7 @@ export class Furnace {
     nonce: Uint8Array = new Uint8Array(randomBytes(24))
   ): Uint8Array {
     // Checks nonce length.
-    if (nonce.length !== 24)
-      throw new Error(
-        "Cryptographic nonce doesn't match the expected 192-bit length."
-      );
+    if (nonce.length !== 24) throw new FurnaceError(0);
     // Pads UNIX timestamp in seconds to an 64-bit unsigned integer.
     const timestamp = Math.round(Date.now() / 1000);
     const buffer = new ArrayBuffer(8);
@@ -63,25 +89,17 @@ export class Furnace {
    */
   public decode(token: Uint8Array, ttl?: number): string {
     // Check token version
-    if (token[0] !== 0x20)
-      throw new Error(
-        `Invalid Fernet version, expected version 32, recieved version ${token[0]}.`
-      );
+    if (token[0] !== 0x20) throw new FurnaceError(1);
 
     // Check minimum token length
-    if (token.length < 33)
-      throw new Error(
-        `Invalid token length, expected at least 264 bits, recieved ${
-          token.length * 8
-        } bits.`
-      );
+    if (token.length < 33) throw new FurnaceError(2);
 
     // Extract timestamp
     const timestamp: number = parseInt(token.slice(1, 9).join(""));
 
     // Check if TTL has expired if included
     if (ttl && ttl >= 0 && timestamp + ttl < Math.round(Date.now() / 1000))
-      throw new Error(`Token has expired.`);
+      throw new FurnaceError(3);
 
     // Extract AAD and nonce from token
     const text = token.slice(33);
