@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.2.8
+
+Removed timestamps from logging.
+
+## 1.2.7
+
+Tried to fix logging format.
+
+## 1.2.6
+
+Fixed undefined logging.
+
+## 1.2.5
+
+Simplified FurnaceError.
+
+## 1.2.4
+
+Forced definite assignment in error handler.
+
+## 1.2.3
+
+Fixed timestamp decoding to run in big endian.
+
+## 1.2.2
+
+Disabled strict property initialisation.
+
+## 1.2.1
+
+Added additional information for decode.
+
 ## 1.2.0
 
 Added error messages.

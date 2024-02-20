@@ -7,13 +7,6 @@ import { xchacha20poly1305 } from "@noble/ciphers/chacha";
 import { bytesToUtf8, utf8ToBytes } from "@noble/ciphers/utils";
 import { randomBytes } from "node:crypto";
 
-enum FurnaceErrorCode {
-  "NONCE_LENGTH" = 0,
-  "INVALID_FERNET_VERSION" = 1,
-  "INVALID_TOKEN_LENGTH" = 2,
-  "TOKEN_EXPIRED" = 3,
-}
-
 enum FurnaceErrorMessage {
   "Cryptographic nonce doesn't match the expected 192-bit length." = 0,
   "Invalid Fernet version, expected version 32." = 1,
@@ -22,17 +15,13 @@ enum FurnaceErrorMessage {
 }
 
 export class FurnaceError extends Error {
-  code: FurnaceErrorCode;
-  msg: FurnaceErrorMessage;
-  constructor(code: FurnaceErrorCode, msg?: FurnaceErrorMessage) {
-    super(msg.toString());
+  constructor(message: FurnaceErrorMessage) {
+    super(message.toString());
     Object.setPrototypeOf(this, FurnaceError.prototype);
-    code = this.code;
-    msg = this.msg;
   }
 
   toString() {
-    return `[${Date.now().toLocaleString}] FURNACE: ${this.code} - ${this.msg}`;
+    return `[${Date.now().toLocaleString("en-GB")}] FURNACE: ${this.message}`;
   }
 }
 
@@ -95,7 +84,16 @@ export class Furnace {
     if (token.length < 33) throw new FurnaceError(2);
 
     // Extract timestamp
-    const timestamp: number = parseInt(token.slice(1, 9).join(""));
+    const tsBytes: Uint8Array = token.slice(1, 9);
+    const tsBuffer: Buffer = Buffer.from(tsBytes);
+    const timestamp = Number(tsBuffer.readBigInt64BE());
+
+    if (ttl)
+      console.log(
+        `FURNACE: Current unix time in milliseconds is ${Math.round(
+          Date.now() / 1000
+        )}, TS+TTL is ${timestamp + ttl}`
+      );
 
     // Check if TTL has expired if included
     if (ttl && ttl >= 0 && timestamp + ttl < Math.round(Date.now() / 1000))
