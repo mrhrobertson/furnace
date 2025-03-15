@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+Added test cases to improve DX/stability.
+
 ## 1.2.8
 
 Removed timestamps from logging.

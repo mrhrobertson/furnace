@@ -96,7 +96,7 @@ export class Furnace {
       );
 
     // Check if TTL has expired if included
-    if (ttl && ttl >= 0 && timestamp + ttl < Math.round(Date.now() / 1000))
+    if (ttl !== undefined && (ttl < 0 || timestamp + ttl < Math.round(Date.now() / 1000)))
       throw new FurnaceError(3);
 
     // Extract AAD and nonce from token
@@ -119,5 +119,9 @@ export function toBase64URL(token: Uint8Array): string {
 
 /** Decodes a Base64URL string to a Uint8Array. */
 export function toUint8Array(base64: string): Uint8Array {
+  // Add basic validation for base64url format
+  if (!/^[A-Za-z0-9_-]*$/.test(base64)) {
+    throw new Error("Invalid base64url string");
+  }
   return new Uint8Array(Buffer.from(base64, "base64url"));
 }
