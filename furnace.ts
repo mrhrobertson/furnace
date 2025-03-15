@@ -7,7 +7,7 @@ import { xchacha20poly1305 } from "@noble/ciphers/chacha";
 import { bytesToUtf8, utf8ToBytes } from "@noble/ciphers/utils";
 import { randomBytes } from "node:crypto";
 
-enum FurnaceErrorMessage {
+export enum FurnaceErrorMessage {
   "Cryptographic nonce doesn't match the expected 192-bit length." = 0,
   "Invalid Fernet version, expected version 32." = 1,
   "Invalid token length, expected at least 264 bits." = 2,
@@ -96,7 +96,10 @@ export class Furnace {
       );
 
     // Check if TTL has expired if included
-    if (ttl !== undefined && (ttl < 0 || timestamp + ttl < Math.round(Date.now() / 1000)))
+    if (
+      ttl !== undefined &&
+      (ttl < 0 || timestamp + ttl < Math.round(Date.now() / 1000))
+    )
       throw new FurnaceError(3);
 
     // Extract AAD and nonce from token

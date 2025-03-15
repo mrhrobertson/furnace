@@ -1,6 +1,15 @@
 {
   "compilerOptions": {
+    "strictPropertyInitialization": false,
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "outDir": "./dist",
     "esModuleInterop": true,
-    "strictPropertyInitialization": false
-  }
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ES6",
+    "strict": true
+  },
+  "include": ["*"],
+  "exclude": ["node_modules"]
 }

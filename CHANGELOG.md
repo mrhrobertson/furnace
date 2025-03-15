@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+Fixing bug with module not loading for Next.js.
+
 ## 1.3.1
 
 Added precompile steps to improve compatibility.
