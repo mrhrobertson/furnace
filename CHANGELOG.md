@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+Added precompile steps to improve compatibility.
+
 ## 1.3.0
 
 Added test cases to improve DX/stability.
